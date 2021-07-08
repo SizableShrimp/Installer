@@ -1,24 +1,21 @@
 buildscript {
     repositories {
-        maven { url = 'https://maven.minecraftforge.net' }
         mavenCentral()
     }
     dependencies {
-        classpath 'net.sf.proguard:proguard-gradle:6.2.2'
-        classpath 'net.minecraftforge:GradleUtils:1.+'
+        classpath 'com.guardsquare:proguard-gradle:7.1.0'
     }
 }
 
 plugins {
-    id 'org.cadixdev.licenser' version '0.5.0'
+    id 'org.cadixdev.licenser' version '0.6.1'
     id 'com.github.johnrengelman.shadow' version '6.1.0'
-    id 'maven'
+    id 'net.minecraftforge.gradleutils' version '1.+'
     id 'maven-publish'
     id 'java'
     id 'eclipse'
     id 'idea'
 }
-apply plugin: 'net.minecraftforge.gradleutils'
 
 repositories {
     mavenCentral()
@@ -56,6 +53,7 @@ ext {
 dependencies {
     implementation 'net.sf.jopt-simple:jopt-simple:5.0.4'
     implementation 'com.google.code.gson:gson:2.8.7'
+    implementation 'com.google.jimfs:jimfs:1.2'
 }
 
 compileJava {
@@ -63,7 +61,7 @@ compileJava {
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
-    classifier = 'sources'
+    archiveClassifier = 'sources'
     from sourceSets.main.allSource
     manifest.from(MANIFEST)
 }
@@ -87,7 +85,7 @@ task pgShrinkJar(type: proguard.gradle.ProGuardTask, dependsOn: shadowJar) {
 
     injars inputJar
     outjars obfuscatedJar
-    libraryjars configurations.compile
+    libraryjars configurations.compileClasspath
 
     // Automatically handle the Java version of this build.
     if (System.getProperty('java.version').startsWith('1.')) {
@@ -104,7 +102,7 @@ task pgShrinkJar(type: proguard.gradle.ProGuardTask, dependsOn: shadowJar) {
 }
 
 task shrinkJar(type: Jar, dependsOn: pgShrinkJar) {
-    classifier = 'shrunk'
+    archiveClassifier = 'shrunk'
     from zipTree(pgShrinkJar.obfuscatedJar)
     manifest.from(MANIFEST)
 }

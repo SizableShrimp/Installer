@@ -4,6 +4,7 @@
 -dontwarn javax.annotation.**
 -dontwarn javax.inject.**
 -dontwarn com.google.gson.**
+-dontwarn com.google.common.**
 
 
 # Keep - Applications. Keep all application classes, along with their 'main'
